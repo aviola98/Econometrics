@@ -1,0 +1,68 @@
+---
+title: "Lab_7"
+output: 
+  html_document:
+    df_print: paged
+---
+
+
+```{r, echo=FALSE}
+#limpando o documento html final
+knitr::opts_chunk$set(echo=FALSE,error=FALSE,warning=FALSE,message=FALSE)
+```
+
+```{r}
+library(haven)
+library(tidyverse)
+library(knitr)
+library(stargazer)
+
+#opening do file
+
+clinton_termometer <- read_stata("nes1996_modif.dta")
+#clinton_termometer
+```
+
+```{r}
+clinton_termometer %>%
+  summarise(mean(hillary, na.rm=T),
+            mean(wmnmvt, na.rm=T),
+            mean(faminc,na.rm=T),
+            sd(hillary, na.rm=T),
+            sd(wmnmvt, na.rm=T),
+            sd(faminc, na.rm=T)) %>%
+  kable()
+```
+
+```{r}
+#creating 2 dummy variables for feminism and high income
+#I use the 50th percentile as a cut 
+clinton_termometer <-
+clinton_termometer %>%
+  mutate("feminist"=case_when(wmnmvt > 61 ~ 1,
+                              wmnmvt < 61 ~ 0),
+         "high_income"= case_when(faminc > 16 ~ 1,
+                                  faminc < 16 ~0
+                                  ))
+```
+
+```{r, results='asis'}
+#estimating an additive regression model based on the variables created above
+
+#additive model.when we consider the casual factors to have the same effect always (we add the effects and we came up with the predicted value)
+
+#multicplicative model including interactions
+additive_model <- clinton_termometer %>%
+lm(hillary ~feminist + high_income, data = .) %>%
+  stargazer(type="html", title = "Additive Regression Model with Feminism and High Income",
+            single.row = T,
+            keep.stat = c("n"))
+
+additive_model
+```
+
+```{r}
+#estimating an interaction regression model based on the dummies
+
+```
+
