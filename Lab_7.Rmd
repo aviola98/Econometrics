@@ -16,6 +16,7 @@ library(haven)
 library(tidyverse)
 library(knitr)
 library(stargazer)
+library(broom)
 
 #opening do file
 
@@ -59,6 +60,20 @@ lm(hillary ~feminist + high_income, data = .) %>%
             keep.stat = c("n"))
 
 additive_model
+
+add_model_graph <-  clinton_termometer %>%
+lm(hillary ~feminist + high_income, data = .)%>%
+  tidy()
+
+add_model_graph %>%
+  mutate(conf.lo=estimate-1.96*std.error,
+         conf.hi=estimate+1.96*std.error) %>%
+  filter(term!="(Intercept)") %>%
+  ggplot() +
+  geom_point(aes(x=term,y=estimate))+
+  geom_errorbar(aes(x=term,y=estimate,ymin=conf.lo,ymax=conf.hi), width=0.1)+
+  geom_hline(yintercept=0,lty=2)+
+  theme_minimal()
 ```
 
 ```{r}
