@@ -17,6 +17,8 @@ library(tidyverse)
 library(knitr)
 library(stargazer)
 library(broom)
+library(jtools)
+library(interactions)
 
 #opening do file
 
@@ -40,10 +42,10 @@ clinton_termometer %>%
 #I use the 50th percentile as a cut 
 clinton_termometer <-
 clinton_termometer %>%
-  mutate("feminist"=case_when(wmnmvt > 61 ~ 1,
-                              wmnmvt < 61 ~ 0),
-         "high_income"= case_when(faminc > 16 ~ 1,
-                                  faminc < 16 ~0
+  mutate("feminist"=case_when(wmnmvt > 81 ~ 1,
+                              wmnmvt < 81 ~ 0),
+         "high_income"= case_when(faminc > 20 ~ 1,
+                                  faminc < 20 ~0
                                   ))
 ```
 
@@ -74,10 +76,24 @@ add_model_graph %>%
   geom_errorbar(aes(x=term,y=estimate,ymin=conf.lo,ymax=conf.hi), width=0.1)+
   geom_hline(yintercept=0,lty=2)+
   theme_minimal()
+
+clinton_termometer %>%
+lm(hillary ~feminist + high_income, data = .)
 ```
 
 ```{r}
 #estimating an interaction regression model based on the dummies
+interacion_model <- clinton_termometer %>%
+    lm(hillary ~feminist*high_income,data = . )
 
+interacion_model
 ```
+
+```{r}
+interact_plot(interacion_model, pred = "feminist",modx="high_income", interval = TRUE )
+```
+
+
+
+
 
