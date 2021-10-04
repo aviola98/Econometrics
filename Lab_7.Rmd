@@ -95,7 +95,7 @@ clinton_termometer %>%
 lm(hillary ~feminist + high_income, data = .)
 
 #coefplot
-coefplot(model = model_1)
+coefplot(model = model_1) 
 
 #scatterplot
 
@@ -105,7 +105,8 @@ clinton_termometer %>%
                  y = hillary)) +
   geom_smooth(aes(x = feminist,
                  y = hillary), 
-              method = "lm")
+              method = "lm") +
+  ggtitle("Scatter plot Feminism")
 
 
 clinton_termometer %>%
@@ -113,7 +114,8 @@ clinton_termometer %>%
   geom_point(aes(x = high_income,
                  y = hillary)) +
   geom_smooth(aes(x = high_income,
-                 y = hillary), method = "lm")
+                 y = hillary), method = "lm") +
+  ggtitle("Scatter plot Income")
 ```
 
 ```{r}
@@ -129,7 +131,7 @@ interact_plot(interacion_model, pred = "feminist",modx="high_income", interval =
 ```
 
 ```{r}
-
+#part 2
 ```
 
 
