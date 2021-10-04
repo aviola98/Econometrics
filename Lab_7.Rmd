@@ -19,7 +19,8 @@ library(stargazer)
 library(broom)
 library(jtools)
 library(interactions)
-
+library(interflex)
+library(coefplot)
 #opening do file
 
 clinton_termometer <- read_stata("nes1996_modif.dta")
@@ -35,6 +36,18 @@ clinton_termometer %>%
             sd(wmnmvt, na.rm=T),
             sd(faminc, na.rm=T)) %>%
   kable()
+
+#kernel density wwmnmvt
+ggplot(clinton_termometer, aes(wmnmvt)) +
+  geom_density() +
+  ggtitle("wmnmvt Kernel's density estimate")
+
+#kernel denisty faminc
+
+ggplot(clinton_termometer, aes(faminc)) +
+  geom_density() +
+    ggtitle("faminc Kernel's density estimate")
+
 ```
 
 ```{r}
@@ -42,9 +55,9 @@ clinton_termometer %>%
 #I use the 50th percentile as a cut 
 clinton_termometer <-
 clinton_termometer %>%
-  mutate("feminist"=case_when(wmnmvt > 81 ~ 1,
-                              wmnmvt < 81 ~ 0),
-         "high_income"= case_when(faminc > 20 ~ 1,
+  mutate("feminist"=case_when(wmnmvt >= 63 ~ 1,
+                              wmnmvt < 63 ~ 0),
+         "high_income"= case_when(faminc >= 20 ~ 1,
                                   faminc < 20 ~0
                                   ))
 ```
@@ -77,8 +90,30 @@ add_model_graph %>%
   geom_hline(yintercept=0,lty=2)+
   theme_minimal()
 
+model_1 <-
 clinton_termometer %>%
 lm(hillary ~feminist + high_income, data = .)
+
+#coefplot
+coefplot(model = model_1)
+
+#scatterplot
+
+clinton_termometer %>%
+  ggplot() +
+  geom_point(aes(x = feminist,
+                 y = hillary)) +
+  geom_smooth(aes(x = feminist,
+                 y = hillary), 
+              method = "lm")
+
+
+clinton_termometer %>%
+  ggplot() +
+  geom_point(aes(x = high_income,
+                 y = hillary)) +
+  geom_smooth(aes(x = high_income,
+                 y = hillary), method = "lm")
 ```
 
 ```{r}
@@ -93,6 +128,9 @@ interacion_model
 interact_plot(interacion_model, pred = "feminist",modx="high_income", interval = TRUE )
 ```
 
+```{r}
+
+```
 
 
 
